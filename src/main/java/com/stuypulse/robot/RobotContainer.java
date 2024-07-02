@@ -6,7 +6,14 @@
 package com.stuypulse.robot;
 
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
+import com.stuypulse.robot.commands.intake.IntakeAcquire;
+import com.stuypulse.robot.commands.intake.IntakeDeacquire;
+import com.stuypulse.robot.commands.intake.IntakeStop;
+import com.stuypulse.robot.commands.shooter.AmpScore;
+import com.stuypulse.robot.commands.shooter.ShooterPodiumShot;
 import com.stuypulse.robot.constants.Ports;
+import com.stuypulse.robot.subsystems.intake.Intake;
+import com.stuypulse.robot.subsystems.shooter.Shooter;
 import com.stuypulse.stuylib.input.Gamepad;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
@@ -21,6 +28,8 @@ public class RobotContainer {
     public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
     
     // Subsystem
+    public final Intake intake = Intake.getInstance();
+    public final Shooter shooter = Shooter.getInstance();
 
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
@@ -43,7 +52,26 @@ public class RobotContainer {
     /*** BUTTONS ***/
     /***************/
 
-    private void configureButtonBindings() {}
+    private void configureButtonBindings() {
+        configureDriverBindings();
+    }
+
+    private void configureDriverBindings() {
+        // intaking
+        driver.getLeftTriggerButton()
+            .whileTrue(new IntakeAcquire());
+
+        driver.getDPadLeft()
+            .onTrue(new IntakeDeacquire())
+            .onFalse(new IntakeStop());
+
+        //shooting
+        driver.getRightTriggerButton()
+            .onTrue(new ShooterPodiumShot());
+
+        driver.getDPadDown()
+            .onTrue(new AmpScore());
+    }
 
     /**************/
     /*** AUTONS ***/
